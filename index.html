@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mini Ship-Shoot</title>
+    <link rel="stylesheet" href="shipshoot.css" />
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td><canvas id="gameCanvas"></canvas></td>
+      </tr>
+    </table>
+    <div class="info-container">
+      <button id="pauseButton">Pause</button>
+      <div id="waveCounter"><b>Wave: 1</b></div>
+      <div id="healthCounter"><b>Health: 1</b></div>
+    </div>
+    <div id="message">
+      <p id="gameMessage"></p>
+      <button id="restartButton" style="display: none">Restart</button>
+    </div>
+    <script src="shipshoot.js"></script>
+  </body>
+</html>

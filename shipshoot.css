@@ -1,0 +1,133 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+}
+
+table {
+  width: 300px;
+  height: 600px;
+  border-collapse: collapse;
+  margin-top: 50px;
+  background: url(/img/galaxian.jpeg);
+}
+
+td {
+  border: 1px solid white;
+  position: relative;
+}
+
+canvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#waveMessage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  display: none;
+}
+
+#message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+  display: none;
+}
+
+#gameMessage {
+  margin-bottom: 20px;
+}
+
+#restartButton {
+  padding: 10px 30px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #f44336;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-left: 12px;
+  margin-top: 20px;
+}
+
+#restartButton:hover {
+  background-color: #e53935;
+  transform: scale(1.1);
+}
+
+#restartButton:active {
+  background-color: #c62828;
+  transform: scale(1.05);
+}
+
+.info-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 300px;
+  margin-top: 10px;
+}
+
+#waveCounter {
+  color: #ffff;
+  font-size: 18px;
+  margin-right: 0;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #ff5733;
+  text-align: center;
+  font-weight: bold;
+}
+
+#pauseButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 0;
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+#pauseButton:hover {
+  background-color: #45a049;
+  transform: scale(1.1);
+}
+
+#pauseButton:active {
+  background-color: #3e8e41;
+  transform: scale(1.05);
+}
+
+#healthCounter {
+  color: #ffff;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #4caf50;
+  text-align: center;
+  font-weight: bold;
+}
