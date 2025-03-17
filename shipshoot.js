@@ -5,19 +5,19 @@ const gameMessage = document.getElementById("gameMessage");
 const waveCounter = document.getElementById("waveCounter");
 const pauseButton = document.getElementById("pauseButton");
 let isPaused = false;
-canvas.width = 300;
-canvas.height = 600;
+canvas.width = 400;
+canvas.height = 650;
 
 let playerHealth = 1; // У гравця лише 1 здоров'я
 let wave = 1; // Поточна хвиля
 
 class Player {
   constructor() {
-    this.width = 50;
-    this.height = 20;
+    this.width = 55;
+    this.height = 55;
     this.x = canvas.width / 2 - this.width / 2;
     this.y = canvas.height - this.height - 10;
-    this.speed = 6;
+    this.speed = 4.0; 
     this.color = "#941111";
     this.movingLeft = false;
     this.movingRight = false;
@@ -25,11 +25,12 @@ class Player {
     this.movingDown = false;
     this.alive = true;
     this.maxUpwardMovement = this.y - 50;
+    this.image = new Image();
+    this.image.src = 'img/playerShipLevel1.webp';
   }
   draw() {
     if (this.alive) {
-      ctx.fillStyle = this.color;
-      ctx.fillRect(this.x, this.y, this.width, this.height);
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
   }
   update() {
@@ -49,34 +50,42 @@ class Bullet {
   constructor(x, y, origin = "player") {
     this.x = x;
     this.y = y;
-    this.width = 5;
-    this.height = 10;
-    this.speed = 7;
-    this.origin = origin; // Мітка, від кого куля
+    this.width = 5;   // Ширина кулі
+    this.height = 10;  // Висота кулі
+    this.speed = 5;    // Швидкість кулі
+    this.origin = origin;
+    this.alive = true;
   }
   draw() {
     ctx.fillStyle = "#4de9e6";
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
+
   update() {
-    this.y -= this.speed;
+    this.y -= this.speed; // Оновлюємо позицію кулі
+    if (this.y < 0) {
+      this.alive = false; // Куля зникає, якщо виходить за межі екрану
+    }
   }
 }
+
+
 
 class Enemy {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.width = 40;
-    this.height = 20;
+    this.width = 50;
+    this.height = 55;
     this.color = "#35e116";
     this.alive = true;
     this.speed = 2.5 + wave * 0.1; // Швидкість залежить від хвилі
+    this.image = new Image();
+    this.image.src = 'img/virusLevel1.png';
   }
   draw() {
     if (this.alive) {
-      ctx.fillStyle = "green";
-      ctx.fillRect(this.x, this.y, this.width, this.height);
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
   }
   update() {
@@ -93,52 +102,122 @@ class Enemy {
     }
   }
 }
-
-class Boss {
+class EnemyLevel2 {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.width = 60;
-    this.height = 40;
-    this.color = "#f44336";
+    this.width = 50;
+    this.height = 55;
+    this.color = "#33cc33";
     this.alive = true;
-    this.health = 25;
-    this.speed = 5;
-    this.bullets = [];
+    this.speed = 1.5 + wave * 0.1; 
+    this.image = new Image();
+    this.image.src = 'img/virusLevel2.png'; // Створіть або додайте зображення для EnemyLevel2
   }
 
   draw() {
     if (this.alive) {
-      ctx.fillStyle = this.color;
-      ctx.fillRect(this.x, this.y, this.width, this.height);
-      ctx.fillStyle = "white";
-      ctx.font = "16px Arial";
-      ctx.fillText(`Health: ${this.health}`, this.x + 5, this.y - 10); // Здоров'я боса на екрані
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
   }
 
   update() {
     if (!isPaused && this.alive) {
-      // Рух боса вправо і вліво
+      this.y += this.speed;
+      if (this.y + this.height >= player.y && player.alive) {
+        playerHealth -= 1;
+        if (playerHealth <= 0) {
+          player.alive = false;
+          showGameOverMessage("You Lose!");
+          cancelAnimationFrame(gameLoop);
+        }
+      }
+
+      if (Math.random() < 0.03) { 
+        bullets.push(new Bullet(this.x + this.width / 2 - 2, this.y));
+      }
+    }
+  }
+}
+
+class EnemyLevel3 {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.width = 50;
+    this.height = 55;
+    this.color = "#ff6600";
+    this.alive = true;
+    this.speed = 5 + wave * 0.1; 
+    this.image = new Image();
+    this.image.src = 'img/virusLevel3.jpeg'; // Створіть або додайте зображення для EnemyLevel3
+  }
+
+  draw() {
+    if (this.alive) {
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
+  }
+
+  update() {
+    if (!isPaused && this.alive) {
+      this.y += this.speed;
+      if (this.y + this.height >= player.y && player.alive) {
+        playerHealth -= 1;
+        if (playerHealth <= 0) {
+          player.alive = false;
+          showGameOverMessage("You Lose!");
+          cancelAnimationFrame(gameLoop);
+        }
+      }
+
+      if (Math.random() < 0.05) { 
+        bullets.push(new Bullet(this.x + this.width / 2 - 2, this.y));
+      }
+    }
+  }
+}
+
+class Boss {
+  constructor(x, y, health) {
+    this.x = x;
+    this.y = y;
+    this.width = 122;
+    this.height = 134;
+    this.color = "#f44336";
+    this.alive = true;
+    this.health = 25;
+    this.speed = 5.5;
+    this.bullets = [];
+    this.image = new Image();
+    this.image.src = 'img/bossLevel1.webp'; 
+  }
+
+  draw() {
+    if (this.alive) {
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      ctx.fillStyle = "white";
+      ctx.font = "16px Arial";
+      ctx.fillText(`Health: ${this.health}`, this.x + 5, this.y - 10); 
+    }
+  }
+
+  update() {
+    if (!isPaused && this.alive) {
       this.x += this.speed;
       if (this.x + this.width > canvas.width || this.x < 0) {
-        this.speed = -this.speed; // Змінюємо напрямок руху
+        this.speed = -this.speed;
       }
 
-      // Стрільба боса вниз
-      if (Math.random() < 0.09) {
-        // Бос стріляє з певною ймовірністю
-        this.bullets.push(
-          new BossBullet(this.x + this.width / 2 - 2, this.y + this.height)
-        );
+      if (Math.random() < 0.05) { 
+        this.bullets.push(new BossBullet(this.x + this.width / 2 - 2, this.y + this.height));
       }
 
-      // Оновлення і малювання куль боса
       this.bullets.forEach((bullet, index) => {
         bullet.update();
         bullet.draw();
         if (bullet.y > canvas.height) {
-          this.bullets.splice(index, 1); // Видаляємо кулю, якщо вона вийшла за межі екрану
+          this.bullets.splice(index, 1); 
         }
       });
     }
@@ -151,7 +230,7 @@ class BossBullet {
     this.y = y;
     this.width = 5;
     this.height = 10;
-    this.speed = 6.5;
+    this.speed = 4.5;
   }
 
   draw() {
@@ -160,9 +239,8 @@ class BossBullet {
   }
 
   update() {
-    if (!isPaused) this.y += this.speed; // Рух кулі вниз
+    if (!isPaused) this.y += this.speed; 
 
-    // Перевірка зіткнення кулі з гравцем
     if (
       this.x < player.x + player.width &&
       this.x + this.width > player.x &&
@@ -175,7 +253,7 @@ class BossBullet {
         showGameOverMessage("You Lose!");
         cancelAnimationFrame(gameLoop);
       }
-      this.y = canvas.height + 10; // Знищуємо кулю після попадання в гравця
+      this.alive = false; 
     }
   }
 }
@@ -281,6 +359,7 @@ function updateGame() {
 let gameLoop = requestAnimationFrame(updateGame);
 
 window.addEventListener("keydown", (e) => {
+  console.log(e.key); // Додайте це для відстеження натискання клавіші
   if (e.key === "ArrowLeft" || e.key === "a") {
     player.movingLeft = true;
   }
@@ -303,6 +382,7 @@ window.addEventListener("keydown", (e) => {
 });
 
 window.addEventListener("keyup", (e) => {
+  console.log(e.key); // Додайте це для відстеження відпускання клавіші
   if (e.key === "ArrowLeft" || e.key === "a") {
     player.movingLeft = false;
   }
@@ -316,6 +396,7 @@ window.addEventListener("keyup", (e) => {
     player.movingDown = false;
   }
 });
+
 
 pauseButton.addEventListener("click", () => {
   isPaused = !isPaused;
