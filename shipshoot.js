@@ -8,6 +8,17 @@ let isPaused = false;
 canvas.width = 400;
 canvas.height = 650;
 
+const table = document.querySelector('table');
+const image = new Image();
+image.src = 'img/galaxian.jpeg'; // Замініть на шлях до вашого зображення
+image.onload = function() {
+    table.style.backgroundImage = `url(${image.src})`;
+    table.style.backgroundSize = "cover";
+    table.style.backgroundPosition = "center";
+    table.style.backgroundRepeat = "no-repeat";
+};
+
+
 let playerHealth = 1; // У гравця лише 1 здоров'я
 let wave = 1; // Поточна хвиля
 
@@ -17,7 +28,7 @@ class Player {
     this.height = 55;
     this.x = canvas.width / 2 - this.width / 2;
     this.y = canvas.height - this.height - 10;
-    this.speed = 5.0; 
+    this.speed = 6; 
     this.color = "#941111";
     this.movingLeft = false;
     this.movingRight = false;
@@ -52,7 +63,7 @@ class Bullet {
     this.y = y;
     this.width = 5;   // Ширина кулі
     this.height = 10;  // Висота кулі
-    this.speed = 6;    // Швидкість кулі
+    this.speed = 6.2;    // Швидкість кулі
     this.origin = origin;
     this.alive = true;
   }
@@ -79,7 +90,7 @@ class Enemy {
     this.height = 55;
     this.color = "#35e116";
     this.alive = true;
-    this.speed = 2.5 + wave * 0.1; // Швидкість залежить від хвилі
+    this.speed = 2.6 + wave * 0.1; // Швидкість залежить від хвилі
     this.image = new Image();
     this.image.src = 'img/virusLevel1.png';
   }
@@ -187,7 +198,7 @@ class Boss {
     this.color = "#f44336";
     this.alive = true;
     this.health = 25;
-    this.speed = 6.5;
+    this.speed = 5.5;
     this.bullets = [];
     this.image = new Image();
     this.image.src = 'img/bossLevel1.webp'; 
@@ -447,9 +458,8 @@ function hideWaveMessage() {
   }
 }
 
-function isMobileDevice() {
-  return /Mobi|Android|iPhone/i.test(navigator.userAgent);
-}
+// Запуск першої хвилі
+spawnEnemies();
 
 if (isMobileDevice()) {
   const controlsContainer = document.createElement('div');
@@ -481,22 +491,43 @@ if (isMobileDevice()) {
   document.body.appendChild(controlsContainer);
 
   let touchStartX = 0, touchStartY = 0;
+
+  // Обробка руху джойстика
   joystick.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
   });
 
   joystick.addEventListener('touchmove', (e) => {
-      const dx = e.touches[0].clientX - touchStartX;
-      const dy = e.touches[0].clientY - touchStartY;
-      // Викликати функції руху персонажа тут
+    const dx = e.touches[0].clientX - touchStartX;
+    const dy = e.touches[0].clientY - touchStartY;
+    // Викликати функції руху персонажа тут
+    if (dx < -20) {
+      player.movingLeft = true;
+    } else if (dx > 20) {
+      player.movingRight = true;
+    }
+
+    if (dy < -20) {
+      player.movingUp = true;
+    } else if (dy > 20) {
+      player.movingDown = true;
+    }
   });
 
+  joystick.addEventListener('touchend', () => {
+    player.movingLeft = false;
+    player.movingRight = false;
+    player.movingUp = false;
+    player.movingDown = false;
+  });
+
+  // Обробка натискання кнопки "Fire"
   fireButton.addEventListener('touchstart', () => {
-      // Викликати функцію стрільби тут
+    const currentTime = Date.now();
+    if (currentTime - lastShotTime > shotCooldown) {
+      bullets.push(new Bullet(player.x + player.width / 2 - 2, player.y));
+      lastShotTime = currentTime;
+    }
   });
 }
-
-
-// Запуск першої хвилі
-spawnEnemies();
