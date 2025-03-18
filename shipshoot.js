@@ -17,7 +17,7 @@ class Player {
     this.height = 55;
     this.x = canvas.width / 2 - this.width / 2;
     this.y = canvas.height - this.height - 10;
-    this.speed = 4.0; 
+    this.speed = 5.0; 
     this.color = "#941111";
     this.movingLeft = false;
     this.movingRight = false;
@@ -52,7 +52,7 @@ class Bullet {
     this.y = y;
     this.width = 5;   // Ширина кулі
     this.height = 10;  // Висота кулі
-    this.speed = 5;    // Швидкість кулі
+    this.speed = 6;    // Швидкість кулі
     this.origin = origin;
     this.alive = true;
   }
@@ -187,7 +187,7 @@ class Boss {
     this.color = "#f44336";
     this.alive = true;
     this.health = 25;
-    this.speed = 5.5;
+    this.speed = 6.5;
     this.bullets = [];
     this.image = new Image();
     this.image.src = 'img/bossLevel1.webp'; 
@@ -230,7 +230,7 @@ class BossBullet {
     this.y = y;
     this.width = 5;
     this.height = 10;
-    this.speed = 4.5;
+    this.speed = 6.5;
   }
 
   draw() {
@@ -446,6 +446,57 @@ function hideWaveMessage() {
     waveMessage.remove();
   }
 }
+
+function isMobileDevice() {
+  return /Mobi|Android|iPhone/i.test(navigator.userAgent);
+}
+
+if (isMobileDevice()) {
+  const controlsContainer = document.createElement('div');
+  controlsContainer.style.position = 'absolute';
+  controlsContainer.style.bottom = '10px';
+  controlsContainer.style.width = '100%';
+  controlsContainer.style.display = 'flex';
+  controlsContainer.style.justifyContent = 'space-between';
+  controlsContainer.style.pointerEvents = 'none';
+
+  const joystick = document.createElement('div');
+  joystick.style.width = '100px';
+  joystick.style.height = '100px';
+  joystick.style.background = 'gray';
+  joystick.style.borderRadius = '50%';
+  joystick.style.marginLeft = '10px';
+  joystick.style.pointerEvents = 'auto';
+
+  const fireButton = document.createElement('button');
+  fireButton.innerText = 'Fire';
+  fireButton.style.width = '80px';
+  fireButton.style.height = '80px';
+  fireButton.style.fontSize = '20px';
+  fireButton.style.marginRight = '10px';
+  fireButton.style.pointerEvents = 'auto';
+
+  controlsContainer.appendChild(joystick);
+  controlsContainer.appendChild(fireButton);
+  document.body.appendChild(controlsContainer);
+
+  let touchStartX = 0, touchStartY = 0;
+  joystick.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+  });
+
+  joystick.addEventListener('touchmove', (e) => {
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - touchStartY;
+      // Викликати функції руху персонажа тут
+  });
+
+  fireButton.addEventListener('touchstart', () => {
+      // Викликати функцію стрільби тут
+  });
+}
+
 
 // Запуск першої хвилі
 spawnEnemies();
