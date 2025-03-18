@@ -203,7 +203,6 @@ function spawnEnemies() {
   for (let i = 0; i < 5 + (wave - 1); i++) {
     let randomX = Math.random() * (canvas.width - 40);
     let startY = -Math.random() * 100 - 20;
-
     enemies.push(new Enemy(randomX, startY));
   }
   waveCounter.textContent = `Wave: ${wave}`;
@@ -324,3 +323,6 @@ window.addEventListener("keyup", (e) => {
     player.movingDown = false;
   }
 });
+
+// Початкова ініціалізація ворогів
+spawnEnemies();
