@@ -28,7 +28,7 @@ class Player {
     this.height = 55;
     this.x = canvas.width / 2 - this.width / 2;
     this.y = canvas.height - this.height - 10;
-    this.speed = 3; 
+    this.speed = 2.4; 
     this.color = "#941111";
     this.movingLeft = false;
     this.movingRight = false;
@@ -63,7 +63,7 @@ class Bullet {
     this.y = y;
     this.width = 5;   // Ширина кулі
     this.height = 10;  // Висота кулі
-    this.speed = 3.6;    // Швидкість кулі
+    this.speed = 3.3;    // Швидкість кулі
     this.origin = origin;
     this.alive = true;
   }
@@ -90,7 +90,7 @@ class Enemy {
     this.height = 55;
     this.color = "#35e116";
     this.alive = true;
-    this.speed = 1.7 + wave * 0.1; // Швидкість залежить від хвилі
+    this.speed = 0.7 + wave * 0.1; // Швидкість залежить від хвилі
     this.image = new Image();
     this.image.src = 'img/virusLevel1.png';
   }
@@ -198,7 +198,7 @@ class Boss {
     this.color = "#f44336";
     this.alive = true;
     this.health = 25;
-    this.speed = 3.6;
+    this.speed = 2;
     this.bullets = [];
     this.image = new Image();
     this.image.src = 'img/bossLevel1.webp'; 
@@ -241,7 +241,7 @@ class BossBullet {
     this.y = y;
     this.width = 5;
     this.height = 10;
-    this.speed = 4;
+    this.speed = 2.2;
   }
 
   draw() {
