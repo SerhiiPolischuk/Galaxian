@@ -27,7 +27,7 @@ class Player {
     this.height = 55;
     this.x = canvas.width / 2 - this.width / 2;
     this.y = canvas.height - this.height - 10;
-    this.speed = 2.3; 
+    this.speed = 2.8; 
     this.color = "#941111";
     this.movingLeft = false;
     this.movingRight = false;
@@ -62,7 +62,7 @@ class Bullet {
     this.y = y;
     this.width = 5;
     this.height = 10;
-    this.speed = 3;
+    this.speed = 3.5;
     this.origin = origin;
     this.alive = true;
   }
