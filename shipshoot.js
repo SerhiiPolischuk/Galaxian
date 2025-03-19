@@ -215,7 +215,7 @@ function spawnBoss() {
 function checkNextWave() {
   if (enemies.every((enemy) => !enemy.alive)) {
     wave++;
-    if (wave === 10) {
+    if (wave == 10) {
       spawnBoss();
     } else if (wave <= 9) {
       spawnEnemies();
