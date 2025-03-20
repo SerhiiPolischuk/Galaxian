@@ -27,7 +27,7 @@ class Player {
     this.height = 55;
     this.x = canvas.width / 2 - this.width / 2;
     this.y = canvas.height - this.height - 10;
-    this.speed = 2.8; 
+    this.speed = 2.8;
     this.color = "#941111";
     this.movingLeft = false;
     this.movingRight = false;
@@ -35,12 +35,15 @@ class Player {
     this.movingDown = false;
     this.alive = true;
     this.maxUpwardMovement = this.y - 50;
+    this.health = 1; // 10 здоров'я у гравця
     this.image = new Image();
     this.image.src = 'img/playerShipLevel1.webp';
   }
   draw() {
     if (this.alive) {
       ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      // Виводимо здоров'я гравця на екран
+      document.getElementById("healthCounter").innerHTML = `<b>Health: ${this.health}</b>`;
     }
   }
   update() {
@@ -66,14 +69,15 @@ class Bullet {
     this.origin = origin;
     this.alive = true;
   }
+
   draw() {
-    ctx.fillStyle = "#4de9e6";
+    ctx.fillStyle = this.origin === "player" ? "#4de9e6" : "red";
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 
   update() {
-    this.y -= this.speed;
-    if (this.y < 0) {
+    this.y -= this.origin === "player" ? this.speed : -this.speed;
+    if (this.y < 0 || this.y > canvas.height) {
       this.alive = false;
     }
   }
@@ -87,15 +91,19 @@ class Enemy {
     this.height = 55;
     this.color = "#35e116";
     this.alive = true;
-    this.speed = 1.5 + wave * 0.1;
+    this.speed = 1.2 + wave * 0.1;
     this.image = new Image();
     this.image.src = 'img/virusLevel1.png';
+    this.bullets = [];
   }
+
   draw() {
     if (this.alive) {
       ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
+    this.bullets.forEach((bullet) => bullet.draw());
   }
+
   update() {
     if (!isPaused && this.alive) {
       this.y += this.speed;
@@ -107,8 +115,131 @@ class Enemy {
           cancelAnimationFrame(gameLoop);
         }
       }
+      // Вороги типу "Enemy" не стріляють, тому ця частина пропускається.
     }
   }
+}
+
+class EnemyLevel2 extends Enemy {
+  constructor(x, y) {
+    super(x, y);
+    this.color = "#33cc33"; // Зелений колір для рівня 2
+    this.speed = 0.5 + wave * 0.1; // Повільний ворог
+    this.image.src = 'img/virusLevel2.png'; // Зображення для EnemyLevel2
+    this.shootCooldown = 6000; // Кулдаун для стрілянини
+    this.lastShotTime = 0; // Час останнього пострілу
+  }
+
+  update() {
+    super.update();
+    if (!isPaused && this.alive) {
+      const currentTime = Date.now();
+      if (currentTime - this.lastShotTime >= this.shootCooldown) {
+        this.shoot();
+        this.lastShotTime = currentTime;
+      }
+    }
+
+    // Оновлюємо кулі, щоб вони рухались до гравця
+    this.bullets.forEach((bullet) => {
+      bullet.update(); // Оновлює позицію кулі
+    });
+  }
+
+  shoot() {
+    // Стріляємо вниз
+    const bullet = new Bullet(this.x + this.width / 2 - 2, this.y + this.height, "enemy");
+    this.bullets.push(bullet);
+  }
+}
+
+
+function spawnEnemies() {
+  enemies = [];
+  let maxEnemies = 5; // Максимальна кількість ворогів на хвилю
+
+  // Визначаємо кількість ворогів кожного типу випадковим чином
+  let numEnemies = Math.floor(Math.random() * (maxEnemies - 1)) + 1; // Кількість "Enemy", мінімум 1
+  let numEnemyLevel2 = maxEnemies - numEnemies; // Кількість "EnemyLevel2", решта
+
+  if (wave >= 4 && wave <= 6) {
+    enemies.push(new EnemyLevel2(randomX, startY),new Enemy(randomX, startY)); // Повільні, але зі стріляниною
+  } else {
+    enemies.push(new Enemy(randomX, startY)); // Звичайні вороги
+  }
+
+  // Генерація звичайних ворогів (Enemy)
+  for (let i = 0; i < numEnemies; i++) {
+    let randomX = Math.random() * (canvas.width - 40);
+    let startY = -Math.random() * 100 - 20;
+    enemies.push(new Enemy(randomX, startY)); // Створюємо звичайного ворога
+  }
+
+  // Генерація ворогів "EnemyLevel2"
+  for (let i = 0; i < numEnemyLevel2; i++) {
+    let randomX = Math.random() * (canvas.width - 40);
+    let startY = -Math.random() * 100 - 20;
+    enemies.push(new EnemyLevel2(randomX, startY)); // Створюємо ворога "EnemyLevel2"
+  }
+
+  waveCounter.textContent = `Wave: ${wave}`;
+}
+
+function updateGame() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  player.update();
+  player.draw();
+
+  // Оновлюємо і перевіряємо кулі
+  bullets.forEach((bullet, bulletIndex) => {
+    bullet.update();
+    bullet.draw();
+    if (bullet.y < 0) bullets.splice(bulletIndex, 1);
+    enemies.forEach((enemy, enemyIndex) => {
+      if (
+        enemy.alive &&
+        bullet.x < enemy.x + enemy.width &&
+        bullet.x + bullet.width > enemy.x &&
+        bullet.y < enemy.y + enemy.height &&
+        bullet.y + bullet.height > enemy.y &&
+        bullet.origin === "player" // Перевіряємо, чи це куля гравця
+      ) {
+        enemy.alive = false;
+        bullets.splice(bulletIndex, 1);
+        checkNextWave();
+      }
+    });
+
+    // Перевірка на кулі боса
+    if (bullet.origin === "enemy") {
+      if (
+        bullet.x < player.x + player.width &&
+        bullet.x + bullet.width > player.x &&
+        bullet.y < player.y + player.height &&
+        bullet.y + bullet.height > player.y
+      ) {
+        playerHealth -= 10;
+        if (playerHealth <= 0) {
+          player.alive = false;
+          showGameOverMessage("You Lose!");
+          cancelAnimationFrame(gameLoop);
+        }
+        bullet.alive = false;
+      }
+    }
+  });
+
+  enemies.forEach((enemy) => {
+    enemy.update();
+    enemy.draw();
+  });
+
+  if (boss) {
+    boss.update();
+    boss.draw();
+  }
+
+  gameLoop = requestAnimationFrame(updateGame);
 }
 
 class Boss {
@@ -164,6 +295,7 @@ class BossBullet {
     this.width = 5;
     this.height = 10;
     this.speed = 1.9;
+    this.alive = true; // Важливо, щоб пуля була живою після кожного оновлення
   }
 
   draw() {
@@ -174,18 +306,32 @@ class BossBullet {
   update() {
     if (!isPaused) this.y += this.speed;
 
+    // Перевірка на зіткнення кулі з гравцем
     if (
       this.x < player.x + player.width &&
       this.x + this.width > player.x &&
       this.y < player.y + player.height &&
       this.y + this.height > player.y
     ) {
-      playerHealth -= 1;
+      // Перевірка, чи гравець ще живий
+      if (player.alive && playerHealth > 0) {
+        playerHealth -= 1; // Зменшення здоров'я гравця
+        console.log(`Player health: ${playerHealth}`); // Лог для перевірки здоров'я
+      }
+
+      // Знищення кулі після зіткнення
+      this.alive = false;
+
+      // Якщо здоров'я гравця стало 0, програш
       if (playerHealth <= 0) {
         player.alive = false;
         showGameOverMessage("You Lose!");
-        cancelAnimationFrame(gameLoop);
+        cancelAnimationFrame(gameLoop); // Завершуємо гру
       }
+    }
+
+    // Якщо пуля вийшла за межі екрану, її треба знищити
+    if (this.y > canvas.height) {
       this.alive = false;
     }
   }
@@ -203,7 +349,13 @@ function spawnEnemies() {
   for (let i = 0; i < 5 + (wave - 1); i++) {
     let randomX = Math.random() * (canvas.width - 40);
     let startY = -Math.random() * 100 - 20;
-    enemies.push(new Enemy(randomX, startY));
+
+    // Рандомно вибираємо тип ворога в залежності від хвилі
+    if (wave >= 4 && wave < 7) {
+      enemies.push(new EnemyLevel2(randomX, startY),new Enemy(randomX, startY)); // Повільні, але зі стріляниною
+    } else {
+      enemies.push(new Enemy(randomX, startY)); // Звичайні вороги
+    }
   }
   waveCounter.textContent = `Wave: ${wave}`;
 }
@@ -301,9 +453,9 @@ window.addEventListener("keydown", (e) => {
     player.movingDown = true;
   }
   if (e.key === " ") {
-    const currentTime = Date.now();
+    let currentTime = Date.now();
     if (currentTime - lastShotTime >= shotCooldown) {
-      bullets.push(new Bullet(player.x + player.width / 2 - 2, player.y));
+      bullets.push(new Bullet(player.x + player.width / 2 - 2, player.y, "player"));
       lastShotTime = currentTime;
     }
   }
