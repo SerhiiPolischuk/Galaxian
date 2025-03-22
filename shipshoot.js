@@ -95,7 +95,7 @@ class Bullet {
     this.y = y;
     this.width = 5;
     this.height = 10;
-    this.speed = 3.5;
+    this.speed = 2.3;
     this.origin = origin;
     this.alive = true;
   }
@@ -121,7 +121,7 @@ class Enemy {
     this.height = 55;
     this.color = "#35e116";
     this.alive = true;
-    this.speed = 0.7;
+    this.speed = 0.3;
     this.image = new Image();
     this.image.src = 'img/virusLevel1.png';
     this.bullets = [];
@@ -222,7 +222,7 @@ class EnemyLevel3 extends Enemy {
       this.y < player.y + player.height &&
       this.y + this.height > player.y
     ) {
-      takeDamage(1); // Якщо ворог стикається з гравцем, знімаємо здоров'я
+      takeDamage(0.5); // Якщо ворог стикається з гравцем, знімаємо здоров'я
       this.alive = false; // Вбиваємо ворога
     }
   }
