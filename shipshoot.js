@@ -121,7 +121,7 @@ class Enemy {
     this.height = 55;
     this.color = "#35e116";
     this.alive = true;
-    this.speed = 0.6;
+    this.speed = 0.9;
     this.image = new Image();
     this.image.src = 'img/virusLevel1.png';
     this.bullets = [];
@@ -328,7 +328,7 @@ class Boss {
     this.color = "#f44336";
     this.alive = true;
     this.health = 25;
-    this.speed = 1;
+    this.speed = 0.90;
     this.bullets = [];
     this.image = new Image();
     this.image.src = 'img/bossLevel1.webp'; 
