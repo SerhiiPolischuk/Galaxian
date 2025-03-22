@@ -121,7 +121,7 @@ class Enemy {
     this.height = 55;
     this.color = "#35e116";
     this.alive = true;
-    this.speed = 0.3;
+    this.speed = 0.6;
     this.image = new Image();
     this.image.src = 'img/virusLevel1.png';
     this.bullets = [];
@@ -154,7 +154,7 @@ class EnemyLevel2 extends Enemy {
   constructor(x, y) {
     super(x, y);
     this.color = "#33cc33";
-    this.speed = 0.3 + wave * 0.1;
+    this.speed = 0.2 + wave * 0.1;
     this.image.src = 'img/virusLevel2.png';
     this.shootCooldown = 7500;
     this.lastShotTime = 0;
@@ -328,7 +328,7 @@ class Boss {
     this.color = "#f44336";
     this.alive = true;
     this.health = 25;
-    this.speed = 2;
+    this.speed = 1;
     this.bullets = [];
     this.image = new Image();
     this.image.src = 'img/bossLevel1.webp'; 
@@ -371,7 +371,7 @@ class BossBullet {
     this.y = y;
     this.width = 5;
     this.height = 10;
-    this.speed = 1.9;
+    this.speed = 1.3;
     this.alive = true; // Важливо, щоб пуля була живою після кожного оновлення
   }
 
