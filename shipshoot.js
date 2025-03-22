@@ -57,7 +57,7 @@ class Player {
     this.height = 55;
     this.x = canvas.width / 2 - this.width / 2;
     this.y = canvas.height - this.height - 10;
-    this.speed = 2.5;
+    this.speed = 2;
     this.color = "#941111";
     this.movingLeft = false;
     this.movingRight = false;
@@ -121,7 +121,7 @@ class Enemy {
     this.height = 55;
     this.color = "#35e116";
     this.alive = true;
-    this.speed = 0.8 + wave * 0.1;
+    this.speed = 0.7;
     this.image = new Image();
     this.image.src = 'img/virusLevel1.png';
     this.bullets = [];
@@ -156,7 +156,7 @@ class EnemyLevel2 extends Enemy {
     this.color = "#33cc33";
     this.speed = 0.3 + wave * 0.1;
     this.image.src = 'img/virusLevel2.png';
-    this.shootCooldown = 7000;
+    this.shootCooldown = 7500;
     this.lastShotTime = 0;
   }
 
