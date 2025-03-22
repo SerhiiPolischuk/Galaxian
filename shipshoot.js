@@ -57,7 +57,7 @@ class Player {
     this.height = 55;
     this.x = canvas.width / 2 - this.width / 2;
     this.y = canvas.height - this.height - 10;
-    this.speed = 2;
+    this.speed = 2.8;
     this.color = "#941111";
     this.movingLeft = false;
     this.movingRight = false;
@@ -95,7 +95,7 @@ class Bullet {
     this.y = y;
     this.width = 5;
     this.height = 10;
-    this.speed = 2.3;
+    this.speed = 3.5;
     this.origin = origin;
     this.alive = true;
   }
@@ -121,7 +121,7 @@ class Enemy {
     this.height = 55;
     this.color = "#35e116";
     this.alive = true;
-    this.speed = 0.9;
+    this.speed = 1.2 + wave * 0.1;
     this.image = new Image();
     this.image.src = 'img/virusLevel1.png';
     this.bullets = [];
@@ -154,9 +154,9 @@ class EnemyLevel2 extends Enemy {
   constructor(x, y) {
     super(x, y);
     this.color = "#33cc33";
-    this.speed = 0.2 + wave * 0.1;
+    this.speed = 0.5 + wave * 0.1;
     this.image.src = 'img/virusLevel2.png';
-    this.shootCooldown = 7500;
+    this.shootCooldown = 6000;
     this.lastShotTime = 0;
   }
 
@@ -181,7 +181,7 @@ class EnemyLevel2 extends Enemy {
         bullet.y < player.y + player.height &&
         bullet.y + bullet.height > player.y
       ) {
-        takeDamage(0.5); // Забираємо 0.5 HP у гравця
+        takeDamage(1); // Забираємо 0.5 HP у гравця
         this.bullets.splice(index, 1); // Видаляємо кулю після зіткнення
       }
     });
@@ -222,7 +222,7 @@ class EnemyLevel3 extends Enemy {
       this.y < player.y + player.height &&
       this.y + this.height > player.y
     ) {
-      takeDamage(0.5); // Якщо ворог стикається з гравцем, знімаємо здоров'я
+      takeDamage(1); // Якщо ворог стикається з гравцем, знімаємо здоров'я
       this.alive = false; // Вбиваємо ворога
     }
   }
@@ -328,7 +328,7 @@ class Boss {
     this.color = "#f44336";
     this.alive = true;
     this.health = 25;
-    this.speed = 0.90;
+    this.speed = 2;
     this.bullets = [];
     this.image = new Image();
     this.image.src = 'img/bossLevel1.webp'; 
@@ -371,7 +371,7 @@ class BossBullet {
     this.y = y;
     this.width = 5;
     this.height = 10;
-    this.speed = 1.3;
+    this.speed = 1.9;
     this.alive = true; // Важливо, щоб пуля була живою після кожного оновлення
   }
 
