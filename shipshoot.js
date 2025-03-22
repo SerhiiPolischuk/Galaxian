@@ -18,8 +18,38 @@ image.onload = function() {
     table.style.backgroundRepeat = "no-repeat";
 };
 
-let playerHealth = 1; // У гравця лише 1 здоров'я
 let wave = 1; // Поточна хвиля
+
+// Тепер створення елементу для здоров'я
+let playerHealth = 10;
+const healthDisplay = document.createElement("div");
+healthDisplay.id = "healthCounter";
+healthDisplay.innerHTML = `<b>Health: ${playerHealth}</b>`;
+document.body.appendChild(healthDisplay);
+
+
+// Функція отримання урону гравцем
+function takeDamage(amount) {
+    playerHealth -= amount;
+    if (playerHealth < 0) playerHealth = 0;
+    healthDisplay.innerHTML = `<b>Health: ${playerHealth}</b>`;
+    
+    if (playerHealth === 0) {
+        gameOver();
+    }
+}
+
+// Виклик функції при попаданні кулі у гравця
+function onPlayerHit() {
+    takeDamage(0.5);
+}
+
+// Функція завершення гри
+function gameOver() {
+          showGameOverMessage("You Lose!");
+          cancelAnimationFrame(gameLoop);
+    // Додатковий код для завершення гри
+}
 
 class Player {
   constructor() {
@@ -123,11 +153,11 @@ class Enemy {
 class EnemyLevel2 extends Enemy {
   constructor(x, y) {
     super(x, y);
-    this.color = "#33cc33"; // Зелений колір для рівня 2
-    this.speed = 0.5 + wave * 0.1; // Повільний ворог
-    this.image.src = 'img/virusLevel2.png'; // Зображення для EnemyLevel2
-    this.shootCooldown = 6000; // Кулдаун для стрілянини
-    this.lastShotTime = 0; // Час останнього пострілу
+    this.color = "#33cc33";
+    this.speed = 0.5 + wave * 0.1;
+    this.image.src = 'img/virusLevel2.png';
+    this.shootCooldown = 6000;
+    this.lastShotTime = 0;
   }
 
   update() {
@@ -140,19 +170,63 @@ class EnemyLevel2 extends Enemy {
       }
     }
 
-    // Оновлюємо кулі, щоб вони рухались до гравця
-    this.bullets.forEach((bullet) => {
-      bullet.update(); // Оновлює позицію кулі
+    // Оновлюємо кулі та перевіряємо їх зіткнення з гравцем
+    this.bullets.forEach((bullet, index) => {
+      bullet.update();
+
+      // Перевірка на зіткнення з гравцем
+      if (
+        bullet.x < player.x + player.width &&
+        bullet.x + bullet.width > player.x &&
+        bullet.y < player.y + player.height &&
+        bullet.y + bullet.height > player.y
+      ) {
+        takeDamage(1); // Забираємо 0.5 HP у гравця
+        this.bullets.splice(index, 1); // Видаляємо кулю після зіткнення
+      }
     });
+
+    // Видаляємо кулі, які вийшли за межі екрану
+    this.bullets = this.bullets.filter(bullet => bullet.y < canvas.height);
   }
 
   shoot() {
-    // Стріляємо вниз
     const bullet = new Bullet(this.x + this.width / 2 - 2, this.y + this.height, "enemy");
     this.bullets.push(bullet);
   }
 }
 
+class EnemyLevel3 extends Enemy {
+  constructor(x, y) {
+    super(x, y);
+    this.speed = 4; // Швидкість збільшується з кожною хвилею
+    this.image.src = 'img/virusLevel3.png'; // Ти можеш використовувати інший малюнок
+  }
+
+  draw() {
+    if (this.alive) {
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    }
+  }
+
+  update() {
+    super.update();
+    
+    // Рухаємо ворога швидше, ніж Enemy
+    this.x -= this.speed;
+
+    // Перевірка на зіткнення з гравцем
+    if (
+      this.x < player.x + player.width &&
+      this.x + this.width > player.x &&
+      this.y < player.y + player.height &&
+      this.y + this.height > player.y
+    ) {
+      takeDamage(1); // Якщо ворог стикається з гравцем, знімаємо здоров'я
+      this.alive = false; // Вбиваємо ворога
+    }
+  }
+}
 
 function spawnEnemies() {
   enemies = [];
@@ -162,8 +236,10 @@ function spawnEnemies() {
   let numEnemies = Math.floor(Math.random() * (maxEnemies - 1)) + 1; // Кількість "Enemy", мінімум 1
   let numEnemyLevel2 = maxEnemies - numEnemies; // Кількість "EnemyLevel2", решта
 
-  if (wave >= 4 && wave <= 6) {
+  if (wave >= 3 && wave <= 6) {
     enemies.push(new EnemyLevel2(randomX, startY),new Enemy(randomX, startY)); // Повільні, але зі стріляниною
+  } else if (wave >= 7 && wave <= 9){
+    enemies.push(new EnemyLevel3(randomX, startY),new Enemy(randomX, startY)); // Повільні, але зі стріляниною
   } else {
     enemies.push(new Enemy(randomX, startY)); // Звичайні вороги
   }
@@ -181,6 +257,7 @@ function spawnEnemies() {
     let startY = -Math.random() * 100 - 20;
     enemies.push(new EnemyLevel2(randomX, startY)); // Створюємо ворога "EnemyLevel2"
   }
+
 
   waveCounter.textContent = `Wave: ${wave}`;
 }
