@@ -95,7 +95,7 @@ class Bullet {
     this.y = y;
     this.width = 5;
     this.height = 10;
-    this.speed = 3.5;
+    this.speed = 5.0;
     this.origin = origin;
     this.alive = true;
   }
@@ -181,7 +181,7 @@ class EnemyLevel2 extends Enemy {
         bullet.y < player.y + player.height &&
         bullet.y + bullet.height > player.y
       ) {
-        takeDamage(1); // Забираємо 0.5 HP у гравця
+        takeDamage(0.5); // Забираємо 0.5 HP у гравця
         this.bullets.splice(index, 1); // Видаляємо кулю після зіткнення
       }
     });
