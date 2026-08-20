@@ -57,7 +57,7 @@ class Player {
     this.height = 55;
     this.x = canvas.width / 2 - this.width / 2;
     this.y = canvas.height - this.height - 10;
-    this.speed = 2.8;
+    this.speed = 4;
     this.color = "#941111";
     this.movingLeft = false;
     this.movingRight = false;
@@ -65,7 +65,7 @@ class Player {
     this.movingDown = false;
     this.alive = true;
     this.maxUpwardMovement = this.y - 50;
-    this.health = 1; // 10 здоров'я у гравця
+    this.health = 10; // 10 здоров'я у гравця
     this.image = new Image();
     this.image.src = 'img/playerShipLevel1.webp';
   }
